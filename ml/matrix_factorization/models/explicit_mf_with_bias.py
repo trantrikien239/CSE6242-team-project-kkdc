@@ -68,15 +68,17 @@ class SGDExplicitBiasMF:
         self.item_bias = item_bias_init
         self._manual_init_bias = True
 
-    def train(self, max_iter=200, learning_rate=0.005):
+    def train(self, max_iter=200, learning_rate=0.005, pretrained=False):
         """ Train model for n_iter iterations from scratch."""
-        # initialize latent vectors        
-        self.user_vecs = np.random.normal(scale=1./self.n_factors,\
-                                          size=(self.n_users, self.n_factors))
-        self.item_vecs = np.random.normal(scale=1./self.n_factors,
-                                          size=(self.n_items, self.n_factors))
+        # initialize latent vectors
+        if not pretrained:
+            self.user_vecs = np.random.normal(scale=1./self.n_factors,\
+                                            size=(self.n_users, self.n_factors))
+            self.item_vecs = np.random.normal(scale=1./self.n_factors,
+                                            size=(self.n_items, self.n_factors))
+        
         self.learning_rate = learning_rate
-        if not self._manual_init_bias:
+        if (not self._manual_init_bias) and (not pretrained):
             self.user_bias = np.zeros(self.n_users)
             self.item_bias = np.zeros(self.n_items)
             self.global_bias = np.mean(self.ratings[self.ratings != 0])
