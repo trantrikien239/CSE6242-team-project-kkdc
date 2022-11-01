@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.sparse import csr_matrix
+import pandas as pd
 from explicit_mf_with_bias import SGDExplicitBiasMF
 
 class GroupRecommenderMF(SGDExplicitBiasMF):
@@ -46,4 +47,13 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
 
     
     def item_encode(self, group_rating_df):
-        raise NotImplementedError
+        """
+        Keep consistent with encoding, access encoding dictionary
+        """
+        group_df = group_rating_df.copy()
+        data_path = "../../data/"
+        encode_df = pd.read_csv(data_path + "anime_encoder.csv") 
+        encode_df = encode_df.to_dict()
+        group_rating_df["anime_id"] = group_rating_df.anime_id.apply(encode_df.get)
+
+        return group_rating_df
