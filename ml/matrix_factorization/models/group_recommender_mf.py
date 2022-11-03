@@ -106,10 +106,6 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
         A_ = self.item_vecs[item_indices]
         A_ = np.hstack((A_, np.ones((n_items_in_group, 1))))
 
-        # s_ = np.zeros(shape=(n_items_in_group,1)) # Shape: (n_items_in_group, 1)
-        
-        # A_ = np.zeros(shape=(n_items_in_group, self.n_factors + 1)) # Shape: (n_items_in_group, n_factors + 1)
-
         pb_g = np.linalg.inv(
             A_.T.dot(A_) + reg * np.eye(N=self.n_factors+1)
             ).dot(A_.T).dot(s_) # (n_factors + 1,1)
@@ -126,9 +122,6 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
         """
         agg_df = group_rating_df_encoded.groupby("item_id")["rating"].mean()
         num_anime_total = self.item_vecs.shape[0]
-        # virtual_user_rating = csr_matrix(
-        #     (agg_df.tolist(), ([0]*len(agg_df), agg_df.index)), 
-        #     shape=(1, num_anime_total))
         virtual_user_rating = np.zeros(shape=(num_anime_total, 1))
         virtual_user_rating[agg_df.index] = agg_df.values.reshape(-1,1)
         virtual_user_rating = virtual_user_rating.T
