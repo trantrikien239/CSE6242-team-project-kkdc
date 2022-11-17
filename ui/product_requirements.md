@@ -16,6 +16,7 @@ Taking that need from the end users, a product owner with flesh out the product 
 
 # 2. Features
 
+## 2.1. Front-end
 For the group recommendation website front end, it needs the following features (this is already extremely reductive):
 - An interactive UI, on which the users can:
   - Add a new group member
@@ -43,10 +44,12 @@ For the group recommendation website front end, it needs the following features 
     - Rating displayed as a float
   - When hover over the member-recommendation link, display the predicted rating of that member for those 10 anime
 
+## 2.2. Back-end / API
 To be able to adapt on the front end, we need to work out the following features in the backend:
 
 - ***To be added***
 
+## 2.3. Algorithms
 To be able to adapt on the front end, we need to work out the following function for the algorithms:
 
 - Before Factorization method:
