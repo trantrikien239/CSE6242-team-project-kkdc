@@ -17,7 +17,7 @@ We use a 2 steps approach:
 - Applying ridge regression (described in the paper) to find the embedding of the virtual user.
 - Calculate predicted rating of the virtual user, filter to get the un-watched animes and return the top 10 recommendation.
 
-# Phase 2 planning
+# 2. Phase 2 planning
 
 Taking in the feedback of the midterm report, we are planning on improving our algorithms so that we'd get better score for the final.
 
@@ -38,3 +38,20 @@ Notes about the final reports:
   - Experiments with different social functions
   - Experiments with before and after factorization
   - Clear evaluation methods and meaningful visualization of the experment results
+
+## 2.1. Evaluation planning
+
+`Clear evaluation methods and meaningful visualization of the experment results` -> We need to elaborate on this point by answering the following questions:
+- What is/are the evaluation metric(s)? How would we calculate that from the real data (i.e. train/test split)
+  - 
+- What are the hyper parameters?
+  - BF vs AF
+  - Social functions:
+    - Mean | AF & BF
+    - Most happiness (Max) | AF & BF
+    - Least misery (Min) | AF & BF
+    - Borda Count | only AF
+    - Average without Misery | only AF
+  - Regularization factors (lambda)
+- What are the charts that we want to plot?
+  - 
