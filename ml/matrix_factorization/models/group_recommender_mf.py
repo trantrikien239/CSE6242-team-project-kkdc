@@ -8,6 +8,9 @@ from .explicit_mf_with_bias import SGDExplicitBiasMF
 
 class GroupRecommenderMF(SGDExplicitBiasMF):
     def __init__(self, full_model_file_path, item_encoder_file_path):
+        """
+        
+        """
         with open(full_model_file_path, "rb") as f:
             mf_full_model = pickle.load(file=f)
         self.item_bias = mf_full_model.item_bias
@@ -21,22 +24,56 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
             }, inplace=True)
     
 
-    def recommend_group(self, group_rating_df, reg):
+    def recommend_group(self, group_rating_df, reg,
+        rec_type="virtual_user",
+        agg_method="mean"
+        ):
         """
-        Input: group_rating_df (3 columns: user_name, item_id, rating)
-        Say we have a group of 5 people: different names
+        Input: 
+            - group_rating_df (3 columns: user_name, item_id, rating)
+                Say we have a group of 5 people: different names
+            - reg: regularization parameter, range between 1e-5 and 1e2
+            - rec_type: "virtual_user" or "combine_recommender"
+            - agg_method: "mean" or "min" (least misery) or "max" (most happiness)
+        Output:
+            - top_10: (2, 10), columns = ["item_id", "rating"]
         """
         self.n_users_in_group = int(group_rating_df["user_name"].nunique())
         group_rating_df_encoded = self.item_encode(group_rating_df)
-        
-        virtual_user_rating = self.agg_group(group_rating_df_encoded)
+        virtual_user_rating = self.agg_virtual(group_rating_df_encoded, agg_method)
 
-        virtual_user_embedding, virtual_user_bias = self.train_virtual(
-            virtual_user_rating, reg)
-        predicted_virtual = self.predict_virtual(virtual_user_embedding, virtual_user_bias)
+        # Calculate recommendation for each user
+        distinct_users = group_rating_df["user_name"].unique()
+        predicted_group = dict()
+        for user in distinct_users:
+            user_rating = group_rating_df_encoded[group_rating_df_encoded["user_name"] == user]
+            user_rating_ = self.agg_virtual(user_rating, agg_method="mean") # Convert to sparse matrix
+            p_u, b_u = self.train_virtual(user_rating_, reg)
+            predicted_user = self.predict_virtual(p_u, b_u)
+            predicted_group[user] = predicted_user
+        predicted_group = pd.DataFrame(predicted_group)
+
+        if rec_type == "virtual_user":
+            p_g, b_g = self.train_virtual(virtual_user_rating, reg)
+            predicted_virtual = self.predict_virtual(p_g, b_g)
+
+        elif rec_type == "combine_recommender":
+            predicted_virtual = self.combine_recommender(predicted_group, agg_method)
+
         df_top_10_encoded = self.sort_and_filter(predicted_virtual, virtual_user_rating)
+        df_top_10_encoded = df_top_10_encoded.join(predicted_group, how="left", on="item_id_encoded")
         top_10 = self.item_decode(df_top_10_encoded)
+
         return top_10
+    
+    def combine_recommender(self, predicted_group, agg_method="mean"):
+        if agg_method == "mean":
+            predicted_virtual = predicted_group.mean(axis=1)
+        elif agg_method == "min":
+            predicted_virtual = predicted_group.min(axis=1)
+        elif agg_method == "max":
+            predicted_virtual = predicted_group.max(axis=1)
+        return predicted_virtual.values
 
     def item_decode(self, df_top_10_encoded):
         """
@@ -49,14 +86,14 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
             self.item_encoder_df, 
             left_on="item_id_encoded", 
             right_on="encoded_id"
-            )
-        top_10 = top_10[["original_id", "rating"]]
+            ).copy()
+        top_10.drop(columns=["encoded_id", "item_id_encoded"], inplace=True)
         top_10.rename(columns={
             "original_id":"item_id",
-            "rating":"rating"
+            "rating":"recommendation_score"
             }, inplace=True)
-        top_10.sort_values(by="rating", ascending=False, inplace=True)
-        return top_10
+        top_10.sort_values(by="recommendation_score", ascending=False, inplace=True)
+        return top_10.reset_index(drop=True)
 
     def sort_and_filter(self, predicted_virtual, virtual_user_rating):
         """
@@ -94,8 +131,7 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
     def train_virtual(self, virtual_user_rating, reg):
         """
         Input:
-            - virtual_user_rating: Compressed Sparse Row matrix containing the rating 
-                shape = (n_users_in_group + 1, n_items_all)
+            - virtual_user_rating: Numpy array containing the rating, shape = (1, num_anime_total)
         """
         n_items_in_group = int((virtual_user_rating > 0).sum()) # num items that's rated by group users
         item_indices = np.argwhere(virtual_user_rating > 0)[:,1].flatten()
@@ -114,19 +150,23 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
         
         return p_g, b_g
 
-    def agg_group(self, group_rating_df_encoded):
+    def agg_virtual(self, group_rating_df_encoded, agg_method="mean"):
         """
         Input: group_rating_df_encoded (3 columns: user_name, item_id_encoded, rating)
         Output: 
             - virtual_user_rating: Numpy array containing the rating, shape = (1, num_anime_total)
         """
-        agg_df = group_rating_df_encoded.groupby("item_id")["rating"].mean()
+        if agg_method == "mean":
+            agg_df = group_rating_df_encoded.groupby("item_id")["rating"].mean()
+        elif agg_method == "min":
+            agg_df = group_rating_df_encoded.groupby("item_id")["rating"].min()
+        elif agg_method == "max":
+            agg_df = group_rating_df_encoded.groupby("item_id")["rating"].max()
         num_anime_total = self.item_vecs.shape[0]
         virtual_user_rating = np.zeros(shape=(num_anime_total, 1))
         virtual_user_rating[agg_df.index] = agg_df.values.reshape(-1,1)
         virtual_user_rating = virtual_user_rating.T
         return virtual_user_rating
-
     
     def item_encode(self, group_rating_df):
         """
