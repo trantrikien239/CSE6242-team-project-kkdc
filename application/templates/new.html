@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE 242 Website</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar_container">
+            <a href="/" id="navbar__logo">Anime Group Recommendation</a>
+            <ul class="navbar__menu">
+                <li class="navbar__item">
+                    <a href="/" class="navbar__links">
+                        Home
+                    </a>
+                </li>
+                <li class="navbar__item">
+                    <a href="https://myanimelist.net/" class="navbar__links">
+                        MyAnimeList
+                    </a>
+                </li>
+                
+                <li class="navbar__btn">
+                    <a class="button", id="add-form-btn" onClick="GFG_Fun()">
+                       Add Your Rating
+                    </a>
+                </li>
+                
+               
+            </ul>
+        </div>
+    </nav>
+        <p id="GFG_DOWN"></p>
+ <script>
+    var down = document.getElementById("GFG_DOWN");
+    var FORM_ID_INCR = 0;
+    var array_name = [];
+    // Create a break line element
+    var br = document.createElement("br");
+    function GFG_Fun() {
+    FORM_ID_INCR++
+    var form_num =  'Form '+ FORM_ID_INCR
+    // Cream label
+    var LABEL =  document.createElement("label");
+    LABEL.innerHTML =  form_num
+    // Create a form dynamically
+    var form = document.createElement("form");
+    //form.setAttribute("method", "post");
+    form.setAttribute("id", form_num );
+
+    // Create an input element for Full Name
+    var FN = document.createElement("input");
+    FN.setAttribute("type", "text");
+    FN.setAttribute("name", "FullName");
+    FN.setAttribute("placeholder", "Full Name");
+ 
+     // Create an input element for date of birth
+     var DOB = document.createElement("input");
+     DOB.setAttribute("type", "text");
+     DOB.setAttribute("name", "dob");
+     DOB.setAttribute("placeholder", "DOB");
+ 
+     // Create an input element for emailID
+     var EID = document.createElement("input");
+     EID.setAttribute("type", "text");
+     EID.setAttribute("name", "emailID");
+     EID.setAttribute("placeholder", "E-Mail ID");
+ 
+      // Create an input element for password
+      var PWD = document.createElement("input");
+      PWD.setAttribute("type", "password");
+      PWD.setAttribute("name", "password");
+      PWD.setAttribute("placeholder", "Password");
+ 
+       // Create an input element for retype-password
+       var RPWD = document.createElement("input");
+       RPWD.setAttribute("type", "password");
+       RPWD.setAttribute("name", "reTypePassword");
+       RPWD.setAttribute("placeholder", "ReEnter Password");
+ 
+                // create a submit button
+                var s = document.createElement("input");
+                s.setAttribute("type", "button");
+                s.setAttribute("value", "Submit");
+                s.setAttribute('onclick','doSomething();');
+                s.onclick = function() {doSomething();};
+                
+                form.appendChild(LABEL);
+                form.appendChild(br.cloneNode());
+                // Append the full name input to the form
+                form.appendChild(FN);
+                 
+                // Inserting a line break
+                form.appendChild(br.cloneNode());
+                 
+                // Append the DOB to the form
+                form.appendChild(DOB);
+                form.appendChild(br.cloneNode());
+                 
+                // Append the emailID to the form
+                form.appendChild(EID);
+                form.appendChild(br.cloneNode());
+                 
+                // Append the Password to the form
+                form.appendChild(PWD);
+                form.appendChild(br.cloneNode());
+                 
+                // Append the ReEnterPassword to the form
+                form.appendChild(RPWD);
+                form.appendChild(br.cloneNode());
+                 
+                // Append the submit button to the form
+                form.appendChild(s);
+ 
+                document.getElementsByTagName("body")[0]
+               .appendChild(form);
+    }
+        function doSomething() {
+            array_name.push(document.getElementsByName("dob").value)
+        }
+        </script>
+    </body>
+</html>
