@@ -26,8 +26,7 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
 
     def recommend_group(self, group_rating_df, reg,
         rec_type="virtual_user",
-        agg_method="mean"
-        ):
+        agg_method="mean", k=10):
         """
         Input: 
             - group_rating_df (3 columns: user_name, item_id, rating)
@@ -36,7 +35,7 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
             - rec_type: "virtual_user" or "combine_recommender"
             - agg_method: "mean" or "min" (least misery) or "max" (most happiness)
         Output:
-            - top_10: (2, 10), columns = ["item_id", "rating"]
+            - top_k: (2, 10), columns = ["item_id", "rating"]
         """
         self.n_users_in_group = int(group_rating_df["user_name"].nunique())
         group_rating_df_encoded = self.item_encode(group_rating_df)
@@ -60,11 +59,11 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
         elif rec_type == "combine_recommender":
             predicted_virtual = self.combine_recommender(predicted_group, agg_method)
 
-        df_top_10_encoded = self.sort_and_filter(predicted_virtual, virtual_user_rating)
-        df_top_10_encoded = df_top_10_encoded.join(predicted_group, how="left", on="item_id_encoded")
-        top_10 = self.item_decode(df_top_10_encoded)
+        df_k_encoded = self.sort_and_filter(predicted_virtual, virtual_user_rating, k=k)
+        df_top_k_encoded = df_k_encoded.join(predicted_group, how="left", on="item_id_encoded")
+        top_k = self.item_decode(df_top_k_encoded)
 
-        return top_10
+        return top_k
     
     def combine_recommender(self, predicted_group, agg_method="mean"):
         if agg_method == "mean":
@@ -75,45 +74,45 @@ class GroupRecommenderMF(SGDExplicitBiasMF):
             predicted_virtual = predicted_group.max(axis=1)
         return predicted_virtual.values
 
-    def item_decode(self, df_top_10_encoded):
+    def item_decode(self, df_top_k_encoded):
         """
         Input:
-            - df_top_10_encoded: (2, 10), columns = ["item_id_encoded", "rating"]
+            - df_top_k_encoded: (2, k), columns = ["item_id_encoded", "rating"]
         Output:
-            - top_10: (2, 10), columns = ["item_id", "rating"]
+            - top_k: (2, k), columns = ["item_id", "rating"]
         """
-        top_10 = df_top_10_encoded.merge(
+        top_k = df_top_k_encoded.merge(
             self.item_encoder_df, 
             left_on="item_id_encoded", 
             right_on="encoded_id"
             ).copy()
-        top_10.drop(columns=["encoded_id", "item_id_encoded"], inplace=True)
-        top_10.rename(columns={
+        top_k.drop(columns=["encoded_id", "item_id_encoded"], inplace=True)
+        top_k.rename(columns={
             "original_id":"item_id",
             "rating":"recommendation_score"
             }, inplace=True)
-        top_10.sort_values(by="recommendation_score", ascending=False, inplace=True)
-        return top_10.reset_index(drop=True)
+        top_k.sort_values(by="recommendation_score", ascending=False, inplace=True)
+        return top_k.reset_index(drop=True)
 
-    def sort_and_filter(self, predicted_virtual, virtual_user_rating):
+    def sort_and_filter(self, predicted_virtual, virtual_user_rating, k=10):
         """
         Input:
             - predicted_virtual: (1, n_items_all)
             - virtual_user_rating: Compressed Sparse Row matrix containing the rating 
                 shape = (n_users_in_group + 1, n_items_all)
         Output:
-            - df_top_10_encoded: (2, 10), columns = ["item_id_encoded", "rating"]
+            - df_k_encoded: (2, 10), columns = ["item_id_encoded", "rating"]
         """
         predicted_virtual = predicted_virtual.flatten()
         virtual_user_rating = virtual_user_rating.flatten()
         predicted_virtual[virtual_user_rating > 0] = -np.inf
-        top_10_encoded = np.argsort(predicted_virtual)[-10:]
-        top_10_rating = predicted_virtual[top_10_encoded]
-        df_top_10_encoded = pd.DataFrame({
-            'item_id_encoded': top_10_encoded,
-            'rating': top_10_rating
+        k_encoded = np.argsort(predicted_virtual)[-k:]
+        top_k_rating = predicted_virtual[k_encoded]
+        df_k_encoded = pd.DataFrame({
+            'item_id_encoded': k_encoded,
+            'rating': top_k_rating
         })
-        return df_top_10_encoded
+        return df_k_encoded
 
     def predict_virtual(self, virtual_user_embedding, virtual_user_bias):
         """`
