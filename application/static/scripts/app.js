@@ -32,27 +32,20 @@ function createAndAppendNewContactForm() {
 
 
 function func() {
-    // formId = "form-"+ FORM_ID_INCR
-    // for (var i = 1; i <= FORM_ID_INCR; i++) {
-    //     var elements = document.getElementById(formId).elements;
-    //     for (var i = 0, element; element = elements[i++];) {
-    //         console.log(element.value)
-    //         if (element.type === "text" && element.value === "")
-    //             console.log("it's an empty textfield")
-    //     }
-    // }
-
     var username = document.getElementById("name_input").value;
+    document.getElementById("name_input").value = "";
     var anime_names = [];
     var ratings = [];
 
     for (var i = 0; i <= 9; i++) {
         anime = document.getElementById("anime_input_" + i).value;
+        document.getElementById("anime_input_" + i).value = "";
         rating = document.getElementById("rating_input_" + i).value;
+        document.getElementById("rating_input_" + i).value = ""
 
-        if (anime !=  "" && rating != "" && username != "") {
+        if (anime !=  "" && rating != "" && username != "" && !isNaN(rating)) {
             anime_names.push(anime);
-            ratings.push(rating);
+            ratings.push(+rating);
         }
     }
 
@@ -62,10 +55,19 @@ function func() {
         "ratings": ratings
     }
 
-    //console.log(data);
-
     $.post("/collect", {
-        javascript_data: JSON.stringify(data)
+        jdata: JSON.stringify(data)
+    });
+
+
+
+    $.post("/predict", {
+        reg: 1,
+        rec_type: "virtual_user",
+        agg_method: "mean"
+    })
+    .done(function(data) {
+        console.log(data)
     });
 
     
