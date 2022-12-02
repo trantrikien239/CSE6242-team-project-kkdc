@@ -8,11 +8,21 @@ from fuzzywuzzy import fuzz
 import requests
 from bs4 import BeautifulSoup
 import concurrent.futures
+import gdown
+import os
 
 #from flask_cors import CORS #comment this on deployment
 
 app = Flask(__name__, static_folder="static")
 #CORS(app) #comment this on deployment
+
+# Download necessary files
+## Check if model file exist first
+if not os.path.exists("./data/model_sgd_mf_v4_50__1666837325.pkl"):
+    print("Downloading the pre-trained embedding model")
+    url = 'https://drive.google.com/u/0/uc?id=1Gws01MJsveOuRVTSD4wRefoc0csa-RYm'
+    output = 'data/model_sgd_mf_v4_50__1666837325.pkl'
+    gdown.download(url, output, quiet=False)
 
 group_mf = GroupRecommenderMF(
     full_model_file_path = "data/model_sgd_mf_v4_50__1666837325.pkl",
@@ -87,8 +97,8 @@ def get_image_url(id):
 def generate_predictions():
 
     conn = connect_to_db()
-    cursor = conn.execute("SELECT name, anime_id, rating FROM group_rating_sample")
-    #cursor = conn.execute("SELECT anime_name_database, anime_id, rating FROM test")
+    # cursor = conn.execute("SELECT name, anime_id, rating FROM group_rating_sample")
+    cursor = conn.execute("SELECT anime_name_database, anime_id, rating FROM test")
     data = cursor.fetchall()
     conn.close()  
 
