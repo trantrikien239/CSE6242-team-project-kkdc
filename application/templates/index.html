@@ -29,10 +29,18 @@
                        Add Your Rating
                     </a>
                 </li>
-        
+                <!-- <li class="navbar__btn"> 
+                    <button id ="visualization"  type = "button" >
+                        <a href="/visualize" class="navbar__links">
+                            Go to Visualization
+                        </a>
+                  </button>
+                </li> -->
                 <li> 
                     <button hidden id ="submit" type = "button"  onclick="func()" >
-                    Submit
+                        <a href="/visualize" class="navbar__links">
+                            Submit
+                        </a>
                   </button>
                 </li>
                 
@@ -51,7 +59,8 @@
     </div>   
 </body>
 
-<script  type="text/javascript" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.1.0/mustache.min.js"></script>
     <script id="form-template" type="text/html">

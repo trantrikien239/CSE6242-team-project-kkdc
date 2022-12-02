@@ -1,6 +1,6 @@
-from turtle import shape
+#from turtle import shape
 import numpy as np
-from scipy.sparse import csr_matrix
+#from scipy.sparse import csr_matrix
 import pandas as pd
 import pickle
 

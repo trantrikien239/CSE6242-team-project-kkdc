@@ -1,5 +1,5 @@
 var FORM_ID_INCR = 0; // Ever-increasing couter
-var array_name = [];   
+var array_name = [];
 
 document.getElementById('add-form-btn').addEventListener('click', function(e) {
 createAndAppendNewContactForm();
@@ -9,21 +9,22 @@ createAndAppendNewContactForm();
 function createAndAppendNewContactForm() {
     
     if (FORM_ID_INCR < 11) {
-        FORM_ID_INCR ++
+        //console.log(FORM_ID_INCR)
         let viewModel = { formId : FORM_ID_INCR};
         let template = document.getElementById('form-template').innerHTML;
         template.display = 'block';
         let renderedHtml = Mustache.render(template, viewModel);
         let node = document.createRange().createContextualFragment(renderedHtml);
         document.getElementById('form-container').appendChild(node);
+        document.getElementById('form-container').children[FORM_ID_INCR].id = "form-"+FORM_ID_INCR
+        document.getElementById('form-container').children[FORM_ID_INCR].children[0].innerText = "Form " + (FORM_ID_INCR + 1)
 
-        
+    
         sp = document.getElementById("submit");
         sp.setAttribute("class","button");
         sp.removeAttribute("hidden");
-        
-        
-        // var btn = document.getElementById('submit'+subButon).addEventListener('click', func());
+
+        FORM_ID_INCR ++
         
     } else {
         alert('We only accept 10 people ratings at the same time');
@@ -32,43 +33,42 @@ function createAndAppendNewContactForm() {
 
 
 function func() {
-    var username = document.getElementById("name_input").value;
-    document.getElementById("name_input").value = "";
-    var anime_names = [];
-    var ratings = [];
+    data = []
 
-    for (var i = 0; i <= 9; i++) {
-        anime = document.getElementById("anime_input_" + i).value;
-        document.getElementById("anime_input_" + i).value = "";
-        rating = document.getElementById("rating_input_" + i).value;
-        document.getElementById("rating_input_" + i).value = ""
+    for (var i = 0; i < FORM_ID_INCR; i++) {
+        form = document.getElementById("form-"+i);
+        var username = form.querySelector("#name_input").value;
+        form.querySelector("#name_input").value = "";
 
-        if (anime !=  "" && rating != "" && username != "" && !isNaN(rating)) {
-            anime_names.push(anime);
-            ratings.push(+rating);
+        var anime_names = [];
+        var ratings = [];
+
+        for (var j = 0; j <= 9; j++) {
+            anime = form.querySelector("#anime_input_" + j).value;
+            form.querySelector("#anime_input_" + j).value = "";
+            rating = form.querySelector("#rating_input_" + j).value;
+            form.querySelector("#rating_input_" + j).value = ""
+    
+            if (anime !=  "" && rating != "" && username != "" && !isNaN(rating)) {
+                anime_names.push(anime);
+                ratings.push(+rating);
+            }
         }
+
+        form_data = {
+            "name": username,
+            "animes": anime_names,
+            "ratings": ratings
+        }
+
+        data.push(form_data)
+        
     }
 
-    data = {
-        "name": username,
-        "animes": anime_names,
-        "ratings": ratings
-    }
+    console.log(data)
 
     $.post("/collect", {
         jdata: JSON.stringify(data)
     });
-
-
-
-    $.post("/predict", {
-        reg: 1,
-        rec_type: "virtual_user",
-        agg_method: "mean"
-    })
-    .done(function(data) {
-        console.log(data)
-    });
-
     
 }
