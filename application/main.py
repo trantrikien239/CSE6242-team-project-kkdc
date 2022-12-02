@@ -85,12 +85,17 @@ def get_image_url(id):
 
 @app.route('/predict', methods=['POST'])
 def generate_predictions():
-
+    #print("generating")
     conn = connect_to_db()
-    cursor = conn.execute("SELECT name, anime_id, rating FROM group_rating_sample")
-    #cursor = conn.execute("SELECT anime_name_database, anime_id, rating FROM test")
+
+    #cursor = conn.execute("SELECT name, anime_id, rating FROM group_rating_sample")
+    cursor = conn.execute("SELECT name, anime_id, rating FROM test")
+
     data = cursor.fetchall()
+
+    #print(data)
     conn.close()  
+
 
     group_rating_df = pd.DataFrame(data, columns=["user_name", "item_id", "rating"])
 
@@ -99,12 +104,10 @@ def generate_predictions():
                                                 agg_method=request.form.get("agg_method"))
 
     users = recommendations.columns[1:-1].to_list() 
-    
+
     results = recommendations.merge(lookup, left_on="item_id", right_on="id", how="inner")
 
     results_dict = {"results": []}
-
-    urls = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         a, b, c, d, e = executor.map(get_image_url, results['item_id'][:5].tolist())
@@ -129,7 +132,8 @@ def generate_predictions():
             temp["individual_predictions"][user] = round(results[user][i], 2)
 
         results_dict["results"].append(temp.copy())
-        
+
+
     with open("static/data/predictions.json", "w") as outfile:
         json.dump(results_dict, outfile) 
  

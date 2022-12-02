@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE 6242 Website</title>
+    <title>Anime Recommender</title>
     <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='styles/style.css') }}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar_container">
-            <a href="/" id="navbar__logo">Anime Group Recommendation</a>
+            <!-- <a href="/" id="navbar__logo">Anime Group Recommendation</a> -->
+            <h1 id="navbar__logo">Anime Group Recommendation</h1>
             <ul class="navbar__menu">
                 <li class="navbar__item">
                     <a href="/" class="navbar__links">
@@ -25,32 +26,33 @@
                 </li>
                 
                 <li class="navbar__btn">
-                    <a class="button", id="add-form-btn">
-                       Add Your Rating
-                    </a>
-                </li>
-                <!-- <li class="navbar__btn"> 
-                    <button id ="visualization"  type = "button" >
-                        <a href="/visualize" class="navbar__links">
-                            Go to Visualization
+                    <button id ="add-form-btn" type = "button" class="button">
+                        <a class="navbar__links">
+                            Add Form
                         </a>
                   </button>
-                </li> -->
-                <li> 
+                </li>
+                <li class="navbar__btn"> 
                     <button hidden id ="submit" type = "button"  onclick="func()" >
-                        <a href="/visualize" class="navbar__links">
+                        <a class="navbar__links">
                             Submit
                         </a>
                   </button>
                 </li>
-                
+                <li class="navbar__btn"> 
+                    <button hidden id ="visualization"  type = "button">
+                        <a href="/visualize" class="navbar__links">
+                            Go to Visualization
+                        </a>
+                  </button>
+                </li> 
                
             </ul>
         </div>
     </nav>
     <div onload="createAndAppendNewContactForm()" > 
      
-        <h1>Forms</h1>
+        <h1 id="forms_h1">Forms</h1>
         
         <div id="form-container">
         </div>

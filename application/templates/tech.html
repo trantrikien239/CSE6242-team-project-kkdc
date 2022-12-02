@@ -7,7 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 <body>
-    <h1 id="vis_title">Anime Group Recommendations</h1>
+    <h1 id="vis_title"><a href="/">Anime Group Recommendations</a></h1>
     <!-- <p>
         This paragraph
         contains a lot of lines
@@ -222,7 +222,7 @@
           create_circle(data);
 
           function update_table() {
-            console.log("update");
+            //console.log("update");
             svg_r.selectAll("g").remove();
             $.post("/predict", {
                 reg: 10**selected_reg,//document.getElementById("reg_dropdown").value,

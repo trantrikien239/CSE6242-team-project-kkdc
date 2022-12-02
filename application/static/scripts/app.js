@@ -1,12 +1,16 @@
 var FORM_ID_INCR = 0; // Ever-increasing couter
 var array_name = [];
 
+window.onload = function() {
+    createAndAppendNewContactForm();
+}
+
 document.getElementById('add-form-btn').addEventListener('click', function(e) {
-createAndAppendNewContactForm();
+    createAndAppendNewContactForm();
 });
 
-
 function createAndAppendNewContactForm() {
+
     
     if (FORM_ID_INCR < 11) {
         //console.log(FORM_ID_INCR)
@@ -18,9 +22,12 @@ function createAndAppendNewContactForm() {
         document.getElementById('form-container').appendChild(node);
         document.getElementById('form-container').children[FORM_ID_INCR].id = "form-"+FORM_ID_INCR
         document.getElementById('form-container').children[FORM_ID_INCR].children[0].innerText = "Form " + (FORM_ID_INCR + 1)
-
     
         sp = document.getElementById("submit");
+        sp.setAttribute("class","button");
+        sp.removeAttribute("hidden");
+
+        sp = document.getElementById("visualization");
         sp.setAttribute("class","button");
         sp.removeAttribute("hidden");
 
@@ -30,7 +37,6 @@ function createAndAppendNewContactForm() {
         alert('We only accept 10 people ratings at the same time');
     }
 }
-
 
 function func() {
     data = []
