@@ -5,7 +5,7 @@ Group Recommender use Flask as the back-end and Javascript especially D3 package
 **BEWARE: FIRST TIME INSTALLATION WILL DOWNLOAD A PRE-TRAINED MODEL (440MB)**
 
 ## On Linux/Mac OS
-First, create a new virtual environment, you can use [conda](https://docs.anaconda.com/anaconda/install/index.html) using the shell script below, or any other software.
+First, navigate to this directory in Terminal, then create a new virtual environment, you can use [conda](https://docs.anaconda.com/anaconda/install/index.html) using the shell script below, or any other software.
 
 ```bash
 conda create -n group_rec python=3.9
@@ -27,7 +27,26 @@ python main.py
 The application should be ready in the local host at port "5000". You can access it by open your browser and go to this url `http://127.0.0.1:5000`.
 
 ## On Windows
+First, navigate to this directory in your command prompt, then create a new virtual environment, you can use [conda](https://docs.anaconda.com/anaconda/install/index.html) using the shell script below, or any other software.
 
+```bash
+conda create -n group_rec python=3.9
+conda activate group_rec
+```
+
+Next, install the required library:
+
+```bash
+cd application
+pip install -r requirements.txt
+```
+
+Run the flask server:
+```bash
+python main.py
+```
+
+The application should be ready in the local host at port "5000". You can access it by open your browser and go to this url `http://127.0.0.1:5000`.
 # Execution
 
 We decided to split our frontend into two separate sites, an input site (where users can input the data used to generate their recommendations) and an interactive visualization site (where users are able to see and interact with their recommended anime). 
