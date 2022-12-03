@@ -5,7 +5,7 @@ Group Recommender use Flask as the back-end and Javascript especially D3 package
 **BEWARE: FIRST TIME INSTALLATION WILL DOWNLOAD A PRE-TRAINED MODEL (440MB)**
 
 ## On Linux/Mac OS
-First, create a new virtual environment, you can use [conda](https://docs.anaconda.com/anaconda/install/index.html) using the shell script below, or any other software.
+First, navigate to this directory in Terminal, then create a new virtual environment, you can use [conda](https://docs.anaconda.com/anaconda/install/index.html) using the shell script below, or any other software.
 
 ```bash
 conda create -n group_rec python=3.9
