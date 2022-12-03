@@ -28,6 +28,23 @@ The application should be ready in the local host at port "5000". You can access
 
 ## On Windows
 
+```bash
+conda create -n group_rec python=3.9
+conda activate group_rec
+```
+
+Next, install the required library:
+
+```bash
+cd application
+pip install -r requirements.txt
+```
+
+Run the flask server:
+```bash
+python main.py
+```
+
 # Execution
 
 We decided to split our frontend into two separate sites, an input site (where users can input the data used to generate their recommendations) and an interactive visualization site (where users are able to see and interact with their recommended anime). 
