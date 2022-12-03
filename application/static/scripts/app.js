@@ -27,9 +27,9 @@ function createAndAppendNewContactForm() {
         sp.setAttribute("class","button");
         sp.removeAttribute("hidden");
 
-        sp = document.getElementById("visualization");
-        sp.setAttribute("class","button");
-        sp.removeAttribute("hidden");
+        // sp = document.getElementById("visualization");
+        // sp.setAttribute("class","button");
+        // sp.removeAttribute("hidden");
 
         FORM_ID_INCR ++
         
@@ -75,6 +75,10 @@ function func() {
 
     $.post("/collect", {
         jdata: JSON.stringify(data)
+    }).done(function(d) {
+        sp = document.getElementById("visualization");
+        sp.setAttribute("class","button");
+        sp.removeAttribute("hidden");
     });
     
 }

@@ -59,6 +59,35 @@ def collect_form_data():
     data = request.form['jdata']
     data = json.loads(data)
 
+    # usernames = []
+    # user_inputs = []
+    # ratings = []
+    # db_inputs = []
+    # ids = []
+
+
+    # for user in data:
+    #     for i in range(len(user['ratings'])):
+
+    #         max_j = 0
+    #         max_r = 0
+    #         for j in range(lookup.shape[0]):
+    #             r = fuzz.partial_ratio(user['animes'][i], lookup['name'][j])
+    
+    #             if r > max_r:
+    #                 max_r = r
+    #                 max_j = j
+    
+    #         anime_name = lookup['name'][max_j]
+
+    #         usernames.append(user['name'])
+    #         user_inputs.append(user['animes'][i])
+    #         ratings.append(user['ratings'][i])
+    #         db_inputs.append(anime_name)
+    #         ids.append(lookup['id'][max_j])
+
+    # df = pd.DataFrame(list(zip(usernames, user_inputs, ratings, db_inputs, ids)), columns=["name", "anime_name_user_input", "rating", "anime_name_database", "anime_id"])
+    # print(df)
     conn = connect_to_db()
     conn.execute("DELETE FROM test")
     conn.commit()
@@ -83,7 +112,7 @@ def collect_form_data():
 
     conn.close()    
 
-    return data
+    return ""
 
 def get_image_url(id):
     html_page = requests.get("https://myanimelist.net/anime/" + str(id))
@@ -108,12 +137,15 @@ def generate_predictions():
 
 
     group_rating_df = pd.DataFrame(data, columns=["user_name", "item_id", "rating"])
+    #print(group_rating_df)
 
     recommendations = group_mf.recommend_group(group_rating_df, reg=float(request.form.get("reg")), 
                                                 rec_type=request.form.get("rec_type"), 
                                                 agg_method=request.form.get("agg_method"))
 
+    #print(recommendations)
     users = recommendations.columns[1:-1].to_list() 
+    #print(users)
 
     results = recommendations.merge(lookup, left_on="item_id", right_on="id", how="inner")
 
